@@ -139,16 +139,18 @@ Settings const* Settings::load(char const* settings_filename)
         {
             if(is_whitespace(c))
                 ++nb_whitespace;
-            else if(write_to_key && c == '=')
-            {
-                write_to_key = false;
-            }
             else
             {
-                if(write_to_key)
-                    current_key += c;
+                StringBuilder& writer = write_to_key? current_key : current_val;
+
+                for(unsigned int i = 0; i < nb_whitespace; ++i)
+                    writer += ' ';
+                nb_whitespace = 0;
+
+                if(write_to_key && c == '=')
+                    write_to_key = false;
                 else
-                    current_val += c;
+                    writer += c;
             }
         }
     }
