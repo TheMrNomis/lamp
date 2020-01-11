@@ -104,13 +104,14 @@ Settings const* Settings::load(char const* settings_filename)
 
         if(c == '\n')
         {
+            if(!is_comment_line && !is_section_line)
+                settings->add_line(current_section.to_string(),
+                                   current_key.to_string(),
+                                   current_val.to_string());
+
             first_char_of_line = true;
             is_comment_line = false;
             is_section_line = false;
-
-            settings->add_line(current_section.to_string(),
-                               current_key.to_string(),
-                               current_val.to_string());
 
             current_key.clear();
             current_val.clear();
