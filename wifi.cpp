@@ -13,7 +13,7 @@ void Wifi::keep_alive_connection()
     m_wifi.run();
 }
 
-void Wifi::is_connected() const
+bool Wifi::is_connected() const
 {
-    return m_wifi.status() == WL_CONNECTED;
+    return WiFi.status() == WL_CONNECTED;
 }
