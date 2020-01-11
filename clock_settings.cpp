@@ -4,7 +4,8 @@
 #include <stdlib.h>
 #include <limits.h>
 
-ClockSettings::ClockSettings()
+ClockSettings::ClockSettings():
+    m_server(nullptr)
 {
 }
 
