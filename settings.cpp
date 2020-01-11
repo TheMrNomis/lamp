@@ -34,6 +34,8 @@ void Settings::add_line(char const* section, char const* key, char const* val)
 
         wifi.add_info(network_name, key, val);
     }
+    else if(string_equals(section, "clock"))
+        clock.add_info(key, val);
     else
     {
         delete[] key;

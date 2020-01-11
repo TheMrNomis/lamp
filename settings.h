@@ -19,6 +19,7 @@ class Settings
         static Settings const* load(char const* settings_filename);
 
         WifiSettings    wifi;
+        ClockSettings   clock;
 };
 
 #endif //SETTINGS_H
