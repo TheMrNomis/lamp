@@ -1,3 +1,7 @@
+/**
+ * @file settings.cpp
+ * @author n0m1s
+ */
 #include "settings.h"
 
 #include <SD.h>
