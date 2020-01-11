@@ -28,12 +28,18 @@ void ClockSettings::add_info(char const* key, char const* val)
         long const v = atoi(val);
         delete[] val;
 
-        if(v < 1)
-            m_cooldown = 1;
-        else if(v > UINT_MAX)
+        if(v > UINT_MAX)
             m_cooldown = UINT_MAX;
         else
-            m_cooldown = (unsigned int) v;
+        {
+            if(v < 1)
+                m_cooldown = 1;
+            else
+                m_cooldown = (unsigned int) v;
+
+            //transform to seconds
+            m_cooldown *= 60;
+        }
     }
     else
         delete[] val;
