@@ -1,6 +1,6 @@
 #include "settings.h"
 
-Settings const* settings = NULL;
+Settings const* settings = nullptr;
 
 bool ok = true;
 
@@ -10,7 +10,7 @@ void setup() {
     Serial.print("\nLoading settings...");
 
     settings = Settings::load("settings.ini");
-    if(settings == NULL)
+    if(settings == nullptr)
     {
         Serial.println(" NOT OK");
         ok = false;
