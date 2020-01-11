@@ -25,7 +25,7 @@ Settings::~Settings()
 {
 }
 
-void Settings::add_line(String const& section, String const& key, String const& val)
+void Settings::add_line(char const* section, char const* key, char const* val)
 {
     //TODO: do something with the line
     Serial.print("Section: \"");
@@ -35,6 +35,10 @@ void Settings::add_line(String const& section, String const& key, String const& 
     Serial.print("\", Val: \"");
     Serial.print(val);
     Serial.println("\"");
+
+    delete[] section;
+    delete[] key;
+    delete[] val;
 }
 
 Settings const* Settings::load(char const* settings_filename)
@@ -62,9 +66,9 @@ Settings const* Settings::load(char const* settings_filename)
     bool is_section_line = false;
     unsigned int nb_whitespace = 0; //used for trimming the end of lines
 
-    String current_section = "";
-    String current_key = "";
-    String current_val = "";
+    StringBuilder current_section;
+    StringBuilder current_key;
+    StringBuilder current_val;
 
     bool write_to_key = true;
 
@@ -89,7 +93,7 @@ Settings const* Settings::load(char const* settings_filename)
             else if (c == '[')
             {
                 is_section_line = true;
-                current_section = "";
+                current_section.clear();
                 continue;
             }
         }
@@ -100,10 +104,12 @@ Settings const* Settings::load(char const* settings_filename)
             is_comment_line = false;
             is_section_line = false;
 
-            settings->add_line(current_section, current_key, current_val);
+            settings->add_line(current_section.to_string(),
+                               current_key.to_string(),
+                               current_val.to_string());
 
-            current_key = "";
-            current_val = "";
+            current_key.clear();
+            current_val.clear();
             write_to_key = true;
         }
         else if(is_comment_line)
@@ -142,7 +148,9 @@ Settings const* Settings::load(char const* settings_filename)
         }
     }
     if(!first_char_of_line && !is_comment_line && !is_section_line)
-        settings->add_line(current_section, current_key, current_val);
+        settings->add_line(current_section.to_string(),
+                           current_key.to_string(),
+                           current_val.to_string());
 
     file.close();
 
