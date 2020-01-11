@@ -18,7 +18,7 @@ class Settings
     public:
         static Settings const* load(char const* settings_filename);
 
-    protected:
+        WifiSettings    wifi;
 };
 
 #endif //SETTINGS_H

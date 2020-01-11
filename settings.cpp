@@ -26,9 +26,21 @@ void Settings::add_line(char const* section, char const* key, char const* val)
     Serial.print(val);
     Serial.println("\"");
 
+    if(string_starts_by(section, "wifi"))
+    {
+        char const* network_name = "0";
+        if(section[4] == ':')
+            network_name = section + 5;
+
+        wifi.add_info(network_name, key, val);
+    }
+    else
+    {
+        delete[] key;
+        delete[] val;
+    }
+
     delete[] section;
-    delete[] key;
-    delete[] val;
 }
 
 Settings const* Settings::load(char const* settings_filename)
