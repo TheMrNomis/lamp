@@ -1,7 +1,3 @@
-/**
- * @file string.cpp
- * @author n0m1s
- */
 #include "./string.h"
 
 bool string_starts_by(char const* hay, char const* needle)

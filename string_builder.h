@@ -1,7 +1,3 @@
-/**
- * @file string_builder.h
- * @author n0m1s
- */
 #ifndef STRING_BUILDER_H
 #define STRING_BUILDER_H
 
