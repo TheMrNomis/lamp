@@ -27,6 +27,7 @@ Settings::~Settings()
 
 void Settings::add_line(String const& section, String const& key, String const& val)
 {
+    //TODO: do something with the line
     Serial.print("Section: \"");
     Serial.print(section);
     Serial.print("\", Key: \"");
