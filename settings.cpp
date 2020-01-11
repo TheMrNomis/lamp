@@ -35,11 +35,11 @@ void Settings::add_line(char const* section, char const* key, char const* val)
 Settings const* Settings::load(char const* settings_filename)
 {
     if(!SD.begin(D8))
-        return NULL;
+        return nullptr;
 
     File file = SD.open("settings.ini", FILE_READ);
     if(!file)
-        return NULL;
+        return nullptr;
 
     Settings* settings = new Settings();
 
