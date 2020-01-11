@@ -29,7 +29,7 @@ void ClockSettings::add_info(char const* key, char const* val)
     }
     else if(string_equals(key, "val"))
     {
-        long const v = atoi(val);
+        long const v = atol(val);
         delete[] val;
 
         if(v > UINT_MAX)
