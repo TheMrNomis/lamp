@@ -1,6 +1,8 @@
 #include "settings.h"
+#include "wifi.h"
 
 Settings const* settings = nullptr;
+Wifi  * wifi  = nullptr;
 
 bool ok = true;
 
@@ -18,8 +20,12 @@ void setup() {
     }
     else
         Serial.println(" OK");
+
+    wifi  = new Wifi(settings->wifi);
 }
 
 void loop() {
     if(!ok) {delay(3600000); return;}
+
+    wifi->keep_alive_connection();
 }
