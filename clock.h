@@ -7,6 +7,7 @@
 
 unsigned int const NTP_BUFFER_SIZE = 48;
 unsigned int const NTP_PORT = 123;
+unsigned int const TZ_RETRY_COOLDOWN = 60;
 
 class Clock
 {
@@ -20,6 +21,8 @@ class Clock
         void ntp_ask();
         void ntp_checkResponse();
 
+        void tz_update();
+
     protected:
         ClockSettings const& m_settings;
 
@@ -29,6 +32,9 @@ class Clock
         WiFiUDP   m_UDP;
         IPAddress m_NTP_ip;
         uint8_t   m_NTP_buffer[NTP_BUFFER_SIZE];
+
+        int       m_TZ_offset;
+        time_t    m_next_TZ_check;
 };
 
 #endif //CLOCK_H

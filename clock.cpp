@@ -1,14 +1,20 @@
 #include "clock.h"
 
 #include <ESP8266WiFi.h>
+#include <ESP8266HTTPClient.h>
+#include <WiFiClient.h>
 #include <DS1307RTC.h>
+#include <jsonlib.h>
+#include <stdlib.h>
 
 Clock::Clock(ClockSettings const& settings):
     m_settings(settings),
     m_last_NTP_check(0),
     m_NTP_waiting_for_response(false),
     m_UDP(),
-    m_NTP_ip()
+    m_NTP_ip(),
+    m_TZ_offset(0),
+    m_next_TZ_check(0)
 {
     setSyncProvider(RTC.get);
     m_UDP.begin(NTP_PORT);
@@ -17,6 +23,7 @@ Clock::Clock(ClockSettings const& settings):
 void Clock::internet_update()
 {
     ntp_update();
+    tz_update();
 }
 
 void Clock::ntp_update()
@@ -86,4 +93,72 @@ void Clock::ntp_checkResponse()
 
     Serial.print("Time: ");
     Serial.println(UNIX_time);
+}
+
+void Clock::tz_update()
+{
+    //it's no use to do anything before we have the right UTC time
+    if(timeStatus() != timeSet)
+        return;
+
+    //rate limiting
+    if(now() <= m_next_TZ_check)
+        return;
+
+    Serial.println("Updating timezones");
+
+    WiFiClient client;
+    HTTPClient http;
+
+    String url = "http://api.timezonedb.com/v2.1/get-time-zone?key=";
+    url += m_settings.api_key();
+    url += "&format=json&by=zone&zone=";
+    url += m_settings.time_zone();
+
+    Serial.print("Connecting to \"");
+    Serial.print(url);
+    Serial.println("\"");
+
+    if(!http.begin(client, url))
+    {
+        Serial.println("Cannot connect");
+        m_next_TZ_check = now() + TZ_RETRY_COOLDOWN;
+    }
+    else
+    {
+        int response = http.GET();
+        if(response <= 0)
+        {
+            Serial.print("Error: ");
+            Serial.println(http.errorToString(response));
+            m_next_TZ_check = now() + TZ_RETRY_COOLDOWN;
+        }
+        else if(response == HTTP_CODE_OK || response == HTTP_CODE_MOVED_PERMANENTLY)
+        {
+            String payload = http.getString();
+
+            int offset = jsonExtract(payload, "gmtOffset").toInt();
+            String end = jsonExtract(payload, "zoneEnd");
+
+            time_t const zoneEnd = atoll(end.c_str());
+
+            Serial.print("offset: ");
+            Serial.println(offset);
+            Serial.print("Zone end: ");
+            Serial.println(zoneEnd);
+
+            m_TZ_offset = offset;
+
+            time_t const time = now();
+            if(time >= zoneEnd)
+                m_next_TZ_check = time + TZ_RETRY_COOLDOWN;
+            else if(zoneEnd - time > TZ_RETRY_COOLDOWN)
+                m_next_TZ_check = zoneEnd - TZ_RETRY_COOLDOWN;
+            else
+                m_next_TZ_check = zoneEnd;
+
+            Serial.print("next check: ");
+            Serial.println(m_next_TZ_check);
+        }
+    }
 }

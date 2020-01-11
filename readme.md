@@ -14,6 +14,8 @@ The time is kept using a real-time clock, coupled with an NTP connection to avoi
 TODO
 
 ##Software installation
+Pre-requisite: a [TimeZone database](https://timezonedb.com) API key is needed to convert from UTC to the local timezone
+
 1. Install the [Arduino IDE](https://www.arduino.cc/en/Main/Software)
 2. Install the [ESP8266 arduino extension](https://github.com/esp8266/Arduino)
     1. add `https://arduino.esp8266.com/stable/package_esp8266com_index.json` to the "Additional Boards Manager URLs" field in the IDE's preferences
