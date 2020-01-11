@@ -5,17 +5,7 @@
 #include "settings.h"
 
 #include <SD.h>
-
-bool is_whitespace(char const c)
-{
-    return c == ' ' || c == '\t';
-}
-
-bool is_printable(char const c)
-{
-    //cf. ASCII table
-    return c == '\n' || (c >= 0x20 && c <= 0x7E);
-}
+#include "string_helper.h"
 
 Settings::Settings()
 {
