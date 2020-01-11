@@ -82,14 +82,18 @@ Settings const* Settings::load(char const* settings_filename)
             //trim whitespace at beginning of line
             if(is_whitespace(c)) continue;
 
+            //discard whitespace-only lines
+            if(c == '\n') continue;
+
             first_char_of_line = false;
 
-            //check if comment, section or normal line
+            //is it a comment line?
             if(c == ';')
             {
                 is_comment_line = true;
                 continue;
             }
+            //is it a section line?
             else if (c == '[')
             {
                 is_section_line = true;
