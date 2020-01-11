@@ -10,6 +10,7 @@ ClockSettings::ClockSettings()
 
 ClockSettings::~ClockSettings()
 {
+    delete[] m_server;
 }
 
 void ClockSettings::add_info(char const* key, char const* val)
