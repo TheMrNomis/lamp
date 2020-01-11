@@ -13,15 +13,6 @@ Settings::~Settings()
 
 void Settings::add_line(char const* section, char const* key, char const* val)
 {
-    //TODO: do something with the line
-    Serial.print("Section: \"");
-    Serial.print(section);
-    Serial.print("\", Key: \"");
-    Serial.print(key);
-    Serial.print("\", Val: \"");
-    Serial.print(val);
-    Serial.println("\"");
-
     if(string_starts_by(section, "wifi"))
     {
         char const* network_name = "0";
@@ -43,23 +34,14 @@ void Settings::add_line(char const* section, char const* key, char const* val)
 
 Settings const* Settings::load(char const* settings_filename)
 {
-    Serial.println(""); //TODO: remove debug message
     if(!SD.begin(D8))
-    {
-        Serial.println("cannot open SD card");
         return NULL;
-    }
 
     File file = SD.open("settings.ini", FILE_READ);
     if(!file)
-    {
-        Serial.println("cannot open settings file");
         return NULL;
-    }
 
     Settings* settings = new Settings();
-
-    Serial.println("----Settings----"); //TODO: remove debug message
 
     bool first_char_of_line = true;
     bool is_comment_line = false;
@@ -160,8 +142,6 @@ Settings const* Settings::load(char const* settings_filename)
                            current_val.to_string());
 
     file.close();
-
-    Serial.println("----End settings----"); //TODO: remove debug log
 
     return settings;
 }
