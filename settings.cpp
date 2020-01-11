@@ -14,7 +14,7 @@ bool is_whitespace(char const c)
 bool is_printable(char const c)
 {
     //cf. ASCII table
-    return c >= 0x20 && c <= 0x7E;
+    return c == '\n' || (c >= 0x20 && c <= 0x7E);
 }
 
 Settings::Settings()
