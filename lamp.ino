@@ -1,8 +1,10 @@
 #include "settings.h"
 #include "wifi.h"
+#include "clock.h"
 
 Settings const* settings = nullptr;
-Wifi  * wifi  = nullptr;
+Wifi  * wifi = nullptr;
+Clock * clk  = nullptr;
 
 bool ok = true;
 
@@ -21,11 +23,14 @@ void setup() {
     else
         Serial.println(" OK");
 
-    wifi  = new Wifi(settings->wifi);
+    wifi = new Wifi(settings->wifi);
+    clk  = new Clock(settings->clock);
 }
 
 void loop() {
     if(!ok) {delay(3600000); return;}
 
     wifi->keep_alive_connection();
+    if(wifi->is_connected())
+        clk->internet_update();
 }
