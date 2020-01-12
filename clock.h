@@ -7,6 +7,7 @@
 
 unsigned int const NTP_BUFFER_SIZE = 48;
 unsigned int const NTP_PORT = 123;
+unsigned int const NTP_RETRY_COOLDOWN = 5*60;
 unsigned int const TZ_RETRY_COOLDOWN = 60;
 
 class Clock
@@ -31,7 +32,7 @@ class Clock
     protected:
         ClockSettings const& m_settings;
 
-        time_t    m_last_NTP_check;
+        time_t    m_next_NTP_check;
         bool      m_NTP_waiting_for_response;
 
         WiFiUDP   m_UDP;

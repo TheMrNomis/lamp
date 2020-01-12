@@ -10,7 +10,7 @@
 
 Clock::Clock(ClockSettings const& settings):
     m_settings(settings),
-    m_last_NTP_check(0),
+    m_next_NTP_check(0),
     m_NTP_waiting_for_response(false),
     m_UDP(),
     m_NTP_ip(),
@@ -65,14 +65,8 @@ void Clock::ntp_update()
     bool need_to_ask = false;
     if(timeStatus() != timeSet)
         need_to_ask = !m_NTP_waiting_for_response;
-    else if(m_NTP_waiting_for_response)
-    {
-        //5 minutes timeout for the NTP response
-        if((now() - m_last_NTP_check) > 5*60)
-            m_NTP_waiting_for_response = false;
-    }
     else
-        need_to_ask = (now() - m_last_NTP_check) > m_settings.cooldown();
+        need_to_ask = now() > m_next_NTP_check;
 
     if(need_to_ask) ntp_ask();
     ntp_checkResponse();
@@ -100,7 +94,7 @@ void Clock::ntp_ask()
     m_UDP.write(m_NTP_buffer, NTP_BUFFER_SIZE);
     m_UDP.endPacket();
 
-    m_last_NTP_check = now();
+    m_next_NTP_check = now() + NTP_RETRY_COOLDOWN;
     m_NTP_waiting_for_response = true;
 }
 
@@ -121,7 +115,7 @@ void Clock::ntp_checkResponse()
 
     time_t UNIX_time = NTP_time - 2208988800UL;
 
-    m_last_NTP_check = UNIX_time;
+    m_next_NTP_check = UNIX_time + m_settings.cooldown();
     RTC.set(UNIX_time);
     setTime(UNIX_time);
 
