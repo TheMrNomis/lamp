@@ -28,7 +28,7 @@ void ClockSettings::add_info(char const* key, char const* val)
 
         m_server = val;
     }
-    else if(string_equals(key, "val"))
+    else if(string_equals(key, "cooldown"))
     {
         long const v = atol(val);
         delete[] val;
