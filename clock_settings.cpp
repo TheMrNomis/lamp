@@ -6,6 +6,7 @@
 
 ClockSettings::ClockSettings():
     m_server(nullptr),
+    m_cooldown(15*60), //default 15 minutes cooldown
     m_api_key(nullptr),
     m_time_zone(nullptr)
 {
