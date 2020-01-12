@@ -6,6 +6,7 @@
 #include <DS1307RTC.h>
 #include <jsonlib.h>
 #include <stdlib.h>
+#include "string_builder.h"
 
 Clock::Clock(ClockSettings const& settings):
     m_settings(settings),
@@ -24,6 +25,39 @@ void Clock::internet_update()
 {
     ntp_update();
     tz_update();
+}
+
+char* Clock::print_time_UTC(time_t t) const
+{
+    StringBuilder ret;
+    ret.append_number(year(t));
+    ret.append('-');
+    ret.append_number(month(t));
+    ret.append('-');
+    ret.append_number(day(t));
+    ret.append(' ');
+    ret.append_number(hour(t));
+    ret.append(':');
+    ret.append_number(minute(t));
+    ret.append(':');
+    ret.append_number(second(t));
+
+    return ret.to_string();
+}
+
+char* Clock::print_time_UTC() const
+{
+    return this->print_time_UTC(now());
+}
+
+char* Clock::print_time_local(time_t t) const
+{
+    return print_time_UTC(t + m_TZ_offset);
+}
+
+char* Clock::print_time_local() const
+{
+    return this->print_time_local(now());
 }
 
 void Clock::ntp_update()

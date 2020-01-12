@@ -16,6 +16,11 @@ class Clock
 
         void internet_update();
 
+        char* print_time_UTC(time_t t) const;
+        char* print_time_UTC() const;
+        char* print_time_local(time_t t) const;
+        char* print_time_local() const;
+
     protected:
         void ntp_update();
         void ntp_ask();
