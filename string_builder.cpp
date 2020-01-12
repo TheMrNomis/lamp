@@ -33,6 +33,34 @@ void StringBuilder::append(char const c)
     m_front = new_front;
 }
 
+void StringBuilder::append_number(int x)
+{
+    if(x < 0)
+    {
+        this->append('-');
+        x = -x;
+    }
+
+    int max_divider = 10;
+    while(x/max_divider > 10)
+        max_divider*=10;
+
+    while(max_divider > 0)
+    {
+        char c = x/max_divider;
+        x = x%max_divider;
+        max_divider /= 10;
+
+        this->append_digit(c);
+    }
+}
+
+void StringBuilder::append_digit(char x)
+{
+    x = (x % 10) + '0';
+    this->append(x);
+}
+
 char* StringBuilder::to_string() const
 {
     char* ret = new char[m_size + 1];

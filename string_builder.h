@@ -26,6 +26,8 @@ class StringBuilder
         void append(char const c);
         inline void operator += (char const c) {this-> append(c);}
 
+        void append_number(int x);
+
         /**
          * @brief get the string
          *
@@ -50,6 +52,8 @@ class StringBuilder
                 Node* m_next;
                 char  m_c;
         };
+
+        void append_digit(char x);
 
     protected:
         unsigned int m_size;
