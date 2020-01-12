@@ -82,11 +82,10 @@ void Clock::ntp_ask()
         return;
     }
 
-    Serial.print("time server IP: \"");
+    Serial.print("NTP server IP: \"");
     Serial.print(m_NTP_ip);
     Serial.println("\"");
 
-    Serial.println("Sending NTP request...");
     //creating the NTP packet
     memset(m_NTP_buffer, 0, NTP_BUFFER_SIZE);
     m_NTP_buffer[0] = 0b11100011; //LI, version, mode
@@ -96,6 +95,12 @@ void Clock::ntp_ask()
 
     m_next_NTP_check = now() + NTP_RETRY_COOLDOWN;
     m_NTP_waiting_for_response = true;
+
+    Serial.print("NTP request sent. Timeout: ");
+    char* next_NTP_request_str = print_time_UTC(m_next_NTP_check);
+    Serial.print(next_NTP_request_str);
+    delete[] next_NTP_request_str;
+    Serial.println(" UTC");
 }
 
 void Clock::ntp_checkResponse()
@@ -119,8 +124,17 @@ void Clock::ntp_checkResponse()
     RTC.set(UNIX_time);
     setTime(UNIX_time);
 
-    Serial.print("Time: ");
-    Serial.println(UNIX_time);
+    Serial.print("NTP response received. Current time: ");
+    char* current_time_utc_str = print_time_UTC(UNIX_time);
+    Serial.print(current_time_utc_str);
+    delete[] current_time_utc_str;
+    Serial.println(" UTC");
+
+    Serial.print("Next NTP request: ");
+    char* next_NTP_request_str = print_time_UTC(m_next_NTP_check);
+    Serial.print(next_NTP_request_str);
+    delete[] next_NTP_request_str;
+    Serial.println(" UTC");
 }
 
 void Clock::tz_update()
@@ -133,8 +147,6 @@ void Clock::tz_update()
     if(now() <= m_next_TZ_check)
         return;
 
-    Serial.println("Updating timezones");
-
     WiFiClient client;
     HTTPClient http;
 
@@ -143,13 +155,9 @@ void Clock::tz_update()
     url += "&format=json&by=zone&zone=";
     url += m_settings.time_zone();
 
-    Serial.print("Connecting to \"");
-    Serial.print(url);
-    Serial.println("\"");
-
     if(!http.begin(client, url))
     {
-        Serial.println("Cannot connect");
+        Serial.println("TZ update failed: cannot connect to database");
         m_next_TZ_check = now() + TZ_RETRY_COOLDOWN;
     }
     else
@@ -157,7 +165,7 @@ void Clock::tz_update()
         int response = http.GET();
         if(response <= 0)
         {
-            Serial.print("Error: ");
+            Serial.print("TZ update failed: ");
             Serial.println(http.errorToString(response));
             m_next_TZ_check = now() + TZ_RETRY_COOLDOWN;
         }
@@ -170,10 +178,13 @@ void Clock::tz_update()
 
             time_t const zoneEnd = atoll(end.c_str());
 
-            Serial.print("offset: ");
-            Serial.println(offset);
-            Serial.print("Zone end: ");
-            Serial.println(zoneEnd);
+            Serial.print("TZ update OK. Offset: ");
+            Serial.print(offset);
+            Serial.print("s (valid until ");
+            char* zone_end_str = print_time_UTC(zoneEnd);
+            Serial.print(zone_end_str);
+            delete[] zone_end_str;
+            Serial.println(" UTC)");
 
             m_TZ_offset = offset;
 
@@ -184,9 +195,12 @@ void Clock::tz_update()
                 m_next_TZ_check = zoneEnd - TZ_RETRY_COOLDOWN;
             else
                 m_next_TZ_check = zoneEnd;
-
-            Serial.print("next check: ");
-            Serial.println(m_next_TZ_check);
         }
     }
+
+    Serial.print("Next TZ check: ");
+    char* next_TZ_check_str = print_time_UTC(m_next_TZ_check);
+    Serial.print(next_TZ_check_str);
+    delete[] next_TZ_check_str;
+    Serial.println(" UTC");
 }
