@@ -7,6 +7,26 @@
         <script src="illumination_curve.js"></script>
     </head>
     <body>
-        <canvas id="illuminationCurve" width="2000" height="1000"></canvas>
+        <header>
+            <h1>LAMP</h1>
+            <div id="right_header">
+                <div id="theme_switcher">
+                    <!--TODO-->
+                </div>
+                <div id="timedate">
+                    <!--TODO: put current time here-->
+                    Jeudi 27 Février 2020<br/>
+                    13:37
+                </div>
+            </div>
+        </header>
+        <section id="lighting_profile">
+            <h1>Lighting Profile</h1>
+            <canvas id="illuminationCurve" width="2000" height="1000"></canvas>
+            <button id="set_curve_linear">Linear</button>
+            <button id="set_curve_default">Default</button>
+            <button id="illumination_test">Test</button>
+            <button id="illumination_save">Save</button>
+        </section>
     </body>
 </html>
