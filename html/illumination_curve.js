@@ -57,19 +57,40 @@ class Drawer {
 
     bezier(p1, c1, c2, p2) {
         this.draw.strokeStyle = "black";
+
         this.draw.beginPath();
         this.draw.moveTo(p1.x, p1.y);
         this.draw.bezierCurveTo(c1.x, c1.y, c2.x, c2.y, p2.x, p2.y);
         this.draw.stroke();
     }
 
+    line(p1, p2) {
+        this.draw.beginPath();
+        this.draw.moveTo(p1.x, p1.y);
+        this.draw.lineTo(p2.x, p2.y);
+        this.draw.stroke();
+    }
+
+    circle(c, r) {
+        this.draw.beginPath();
+        this.draw.arc(c.x, c.y, r, 0, 2*Math.PI);
+        this.draw.fill();
+    }
+
     controlHandle(p, c) {
         //line between p and c
         this.draw.strokeStyle = "grey";
 
-        this.draw.moveTo(p.x, p.y);
-        this.draw.lineTo(c.x, c.y);
-        this.draw.stroke();
+        this.line(p, c);
+        this.circle(c, canvasParams.handleRadius);
+    }
+
+    drawCurve(p1, c1, c2, p2) {
+        this.draw.clearRect(0, 0, canvasParams.w, canvasParams.h);
+
+        this.bezier(p1, c1, c2, p2);
+        this.controlHandle(p1, c1);
+        this.controlHandle(p2, c2);
     }
 }
 
@@ -79,7 +100,7 @@ window.addEventListener("load", function() {
     canvasParams.w = canvas.width;
 
     var context = canvas.getContext("2d");
-    var draw = new Drawer(context);
+    var drawer = new Drawer(context);
 
     var p1 = IlluminationPoint.fromIllumination(0,0);
     var p2 = IlluminationPoint.fromIllumination(1,1);
@@ -87,7 +108,6 @@ window.addEventListener("load", function() {
     var c1 = IlluminationPoint.fromIllumination(0.2, 0);
     var c2 = IlluminationPoint.fromIllumination(0.8, 1);
 
-    draw.bezier(p1, c1, c2, p2);
-    draw.controlHandle(p1, c1);
-    draw.controlHandle(p2, c2);
+
+    drawer.drawCurve(p1, c1, c2, p2);
 });
