@@ -56,6 +56,9 @@ class IlluminationPoint {
     }
 }
 
+/**
+ * drawing functions for the bezier path and handles
+ */
 class Drawer {
     constructor(context) {
         this.draw = context;
