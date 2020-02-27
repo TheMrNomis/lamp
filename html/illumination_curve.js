@@ -1,6 +1,8 @@
 var canvasParams = {
     h: 1000,
-    w: 2000
+    w: 2000,
+    lineWidth : 10,
+    handleRadius : 40
 };
 
 /**
@@ -50,7 +52,7 @@ class IlluminationPoint {
 class Drawer {
     constructor(context) {
         this.draw = context;
-        this.draw.lineWidth = 10;
+        this.draw.lineWidth = canvasParams.lineWidth;
     }
 
     bezier(p1, c1, c2, p2) {
