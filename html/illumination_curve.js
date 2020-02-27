@@ -32,6 +32,13 @@ class IlluminationPoint {
         return ret;
     }
 
+    static distCanvas(p1, p2) {
+        const x = p1.x - p2.x;
+        const y = p1.y - p2.y;
+
+        return Math.sqrt(x*x + y*y);
+    }
+
     get x() {
         return this._u * canvasParams.w;
     }
@@ -94,6 +101,17 @@ class Drawer {
     }
 }
 
+
+/**
+ * enumeration to encode if the user is moving a handle
+ */
+const ControlPointMoving = Object.freeze({
+    none: 0,
+    c1: 1,
+    c2: 2
+});
+
+//main script below
 window.addEventListener("load", function() {
     var canvas = document.getElementById("illuminationCurve");
     canvasParams.h = canvas.height;
@@ -108,6 +126,36 @@ window.addEventListener("load", function() {
     var c1 = IlluminationPoint.fromIllumination(0.2, 0);
     var c2 = IlluminationPoint.fromIllumination(0.8, 1);
 
+    function getCursorPosition(e) {
+        const bbox = canvas.getBoundingClientRect();
+        const u = (e.clientX - bbox.left) / bbox.width;
+        const v = 1 - ((e.clientY - bbox.top) / bbox.height);
+        return IlluminationPoint.fromIllumination(u, v);
+    }
 
     drawer.drawCurve(p1, c1, c2, p2);
+
+    //interaction
+    var currentlyMoving = ControlPointMoving.none;
+    canvas.addEventListener("mousedown", function(e) {
+        const cursor = getCursorPosition(e);
+
+        const maxDist = canvasParams.handleRadius;
+        const distC1 = IlluminationPoint.distCanvas(cursor, c1);
+        const distC2 = IlluminationPoint.distCanvas(cursor, c2);
+
+        if(distC1 <= maxDist) {currentlyMoving = ControlPointMoving.c1;}
+        if(distC2 <= maxDist) {currentlyMoving = ControlPointMoving.c2;}
+    });
+
+    canvas.addEventListener("mouseup", function(e) {
+        currentlyMoving = ControlPointMoving.none;
+    });
+
+    canvas.addEventListener("mousemove", function(e) {
+        if(currentlyMoving == ControlPointMoving.c1) {c1 = getCursorPosition(e);}
+        if(currentlyMoving == ControlPointMoving.c2) {c2 = getCursorPosition(e);}
+
+        if(currentlyMoving != ControlPointMoving.none) {drawer.drawCurve(p1, c1, c2, p2);}
+    });
 });
