@@ -15,8 +15,8 @@ class IlluminationPoint {
     static fromCanvas(x, y) {
         var ret = new IlluminationPoint();
 
-        ret._u = 1 - (x/canvasParams.h);
-        ret._v = y/canvasParams.w;
+        ret._u = x/canvasParams.w;
+        ret._v = 1 - (y/canvasParams.h);
 
         return ret;
     }
@@ -31,11 +31,11 @@ class IlluminationPoint {
     }
 
     get x() {
-        return (1-this._u) * canvasParams.w;
+        return this._u * canvasParams.w;
     }
 
     get y() {
-        return this._v * canvasParams.h;
+        return (1-this._v) * canvasParams.h;
     }
 
     get u() {
